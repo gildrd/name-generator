@@ -2,10 +2,17 @@
 
 namespace GilDrd\NameGenerator;
 
+use GilDrd\NameGenerator\Exceptions\GenerateFromFileException;
+use GilDrd\NameGenerator\Exceptions\IntegrityException;
+use GilDrd\NameGenerator\Tools\IntegrityChecker;
+use GilDrd\NameGenerator\Tools\Parameter;
+
 class NameGenerator
 {
     private array $firstLetters;
     private array $possibleNextLetters;
+
+    private Parameter $parameter;
 
     public const MALE_ELVES = 10;
     public const FEMALE_ELVES = 11;
@@ -14,6 +21,7 @@ class NameGenerator
     {
         $this->firstLetters = [];
         $this->possibleNextLetters = [];
+        $this->parameter = new Parameter();
 
         if (null !== $example) {
             $this->generateFromInternalFile($example);
@@ -22,7 +30,7 @@ class NameGenerator
 
     private function generateFromInternalFile(int $example)
     {
-        $exampleDirectory = __DIR__.'/exemples';
+        $exampleDirectory = __DIR__.'/examples';
 
         switch ($example) {
             case self::MALE_ELVES:
@@ -31,6 +39,8 @@ class NameGenerator
             case self::FEMALE_ELVES:
                 $handle = fopen($exampleDirectory.'/female_elves.csv', 'r');
                 break;
+            default:
+                throw new GenerateFromFileException(sprintf('There is no file configured for ID %s', $example));
         }
 
         $list = [];
@@ -45,6 +55,8 @@ class NameGenerator
 
     public function analyseFromArray(array $nameList): void
     {
+        $this->getParameter()->setLengthsFromNameList($nameList);
+
         $this->firstLetters = $this->getFirstLetters($nameList);
         $this->possibleNextLetters = $this->getSequences($nameList);
     }
@@ -68,6 +80,12 @@ class NameGenerator
             if ($nextLetter !== '*') {
                 $name.= strtolower($nextLetter);
             }
+        }
+
+        try {
+            IntegrityChecker::check($this->parameter, $name);
+        } catch (IntegrityException $exception) {
+            return $this->generate();
         }
 
         return $name;
@@ -142,5 +160,15 @@ class NameGenerator
         }
 
         return $availableLetters;
+    }
+
+    public function getParameter(): Parameter
+    {
+        return $this->parameter;
+    }
+
+    public function setParameter(Parameter $parameter): void
+    {
+        $this->parameter = $parameter;
     }
 }
