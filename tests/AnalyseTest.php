@@ -2,7 +2,9 @@
 
 namespace GilDrd\NameGenerator\Tests;
 
+use GilDrd\NameGenerator\Exceptions\GenerateFromFileException;
 use GilDrd\NameGenerator\NameGenerator;
+use GilDrd\NameGenerator\Tools\Parameter;
 use PHPUnit\Framework\TestCase;
 
 class AnalyseTest extends TestCase
@@ -16,14 +18,7 @@ class AnalyseTest extends TestCase
         'Irvine',
         'Kiros',
         'Laguna',
-        'Ward',
-//        'Seifer',
-//        'Edea',
-//        'Cid',
-//        'Rajin',
-//        'Fujin',
-//        'Bigs',
-//        'Wedge'
+        'Ward'
     ];
 
     const namesFromJson = '["Squall", "Linoa", "Quistis", "Selphie", "Zell", "Irvine", "Kiros", "Laguna", "Ward"]';
@@ -222,5 +217,58 @@ class AnalyseTest extends TestCase
 
         $this->assertTrue(strlen($name) >= 4);
         $this->assertTrue(substr($name, -1) !== '*');
+    }
+
+    public function testDefaultParameterFromIncludedFile()
+    {
+        $nameGenerator = new NameGenerator(NameGenerator::FEMALE_ELVES);
+        $parameter = $nameGenerator->getParameter();
+
+        $this->assertEquals(3, $parameter->getMinLength());
+        $this->assertEquals(11, $parameter->getMaxLength());
+        $this->assertFalse($parameter->getLetterInTriple());
+    }
+
+    public function testDefaultParameterFromJson()
+    {
+        $nameGenerator = new NameGenerator();
+        $nameGenerator->analyseFromJson(self::namesFromJson);
+        $parameter = $nameGenerator->getParameter();
+
+        $this->assertEquals(4, $parameter->getMinLength());
+        $this->assertEquals(7, $parameter->getMaxLength());
+        $this->assertFalse($parameter->getLetterInTriple());
+    }
+
+    public function testDefaultParameterFromArray()
+    {
+        $nameGenerator = new NameGenerator();
+        $nameGenerator->analyseFromArray(self::names);
+        $parameter = $nameGenerator->getParameter();
+
+        $this->assertEquals(4, $parameter->getMinLength());
+        $this->assertEquals(7, $parameter->getMaxLength());
+        $this->assertFalse($parameter->getLetterInTriple());
+    }
+
+    public function testExceptionIfWrongSource()
+    {
+        $this->expectException(GenerateFromFileException::class);
+
+        new NameGenerator(9999);
+    }
+
+    public function testCustomParameters()
+    {
+        $nameGenerator = new NameGenerator(NameGenerator::FEMALE_ELVES);
+        $parameter = new Parameter();
+        $parameter->setLetterInTriple(true)
+            ->setMinLength(5)
+            ->setMaxLength(9);
+        $nameGenerator->setParameter($parameter);
+
+        $this->assertEquals(5, $parameter->getMinLength());
+        $this->assertEquals(9, $parameter->getMaxLength());
+        $this->assertTrue($parameter->getLetterInTriple());
     }
 }
