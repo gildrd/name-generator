@@ -7,6 +7,7 @@ class Parameter
     private int $minLength = 0;
     private int $maxLength = 0;
     private bool $letterInTriple = false;
+    private bool $noVowelsInName = false;
 
     public function setLengthsFromNameList(array $nameList): self
     {
@@ -78,6 +79,18 @@ class Parameter
     public function setLetterInTriple(bool $letterInTriple): Parameter
     {
         $this->letterInTriple = $letterInTriple;
+
+        return $this;
+    }
+
+    public function getNoVowelsInName(): bool
+    {
+        return $this->noVowelsInName;
+    }
+
+    public function setNoVowelsInName(bool $noVowelsInName): Parameter
+    {
+        $this->noVowelsInName = $noVowelsInName;
 
         return $this;
     }

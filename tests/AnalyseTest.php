@@ -5,6 +5,7 @@ namespace GilDrd\NameGenerator\Tests;
 use GilDrd\NameGenerator\Exceptions\GenerateFromFileException;
 use GilDrd\NameGenerator\NameGenerator;
 use GilDrd\NameGenerator\Tools\Parameter;
+use GilDrd\NameGenerator\Tools\Type;
 use PHPUnit\Framework\TestCase;
 
 class AnalyseTest extends TestCase
@@ -212,7 +213,7 @@ class AnalyseTest extends TestCase
 
     public function testFile()
     {
-        $nameGenerator = new NameGenerator(NameGenerator::FEMALE_ELVES);
+        $nameGenerator = new NameGenerator(Type::FEMALE_ELVES);
         $name = $nameGenerator->generate();
 
         $this->assertTrue(strlen($name) >= 4);
@@ -221,7 +222,7 @@ class AnalyseTest extends TestCase
 
     public function testDefaultParameterFromIncludedFile()
     {
-        $nameGenerator = new NameGenerator(NameGenerator::FEMALE_ELVES);
+        $nameGenerator = new NameGenerator(Type::FEMALE_ELVES);
         $parameter = $nameGenerator->getParameter();
 
         $this->assertEquals(3, $parameter->getMinLength());
@@ -260,7 +261,7 @@ class AnalyseTest extends TestCase
 
     public function testCustomParameters()
     {
-        $nameGenerator = new NameGenerator(NameGenerator::FEMALE_ELVES);
+        $nameGenerator = new NameGenerator(Type::MALE_40K_ARCHAIC);
         $parameter = new Parameter();
         $parameter->setLetterInTriple(true)
             ->setMinLength(5)

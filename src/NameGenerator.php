@@ -6,6 +6,7 @@ use GilDrd\NameGenerator\Exceptions\GenerateFromFileException;
 use GilDrd\NameGenerator\Exceptions\IntegrityException;
 use GilDrd\NameGenerator\Tools\IntegrityChecker;
 use GilDrd\NameGenerator\Tools\Parameter;
+use GilDrd\NameGenerator\Tools\Type;
 
 class NameGenerator
 {
@@ -13,9 +14,6 @@ class NameGenerator
     private array $possibleNextLetters;
 
     private Parameter $parameter;
-
-    public const MALE_ELVES = 10;
-    public const FEMALE_ELVES = 11;
 
     public function __construct(?int $example = null)
     {
@@ -33,10 +31,22 @@ class NameGenerator
         $exampleDirectory = __DIR__.'/examples';
 
         switch ($example) {
-            case self::MALE_ELVES:
+            case Type::MALE_40K_ARCHAIC:
+                $handle = fopen($exampleDirectory.'/40k_male_archaic.csv', 'r');
+                break;
+            case Type::MALE_40K_LOWER_GOTHIC:
+                $handle = fopen($exampleDirectory.'/40k_male_lower_gothic.csv', 'r');
+                break;
+            case Type::MALE_40K_HIGHER_GOTHIC:
+                $handle = fopen($exampleDirectory.'/40k_male_hiher_gothic.csv', 'r');
+                break;
+            case Type::MALE_40K_PRIMITIVE:
+                $handle = fopen($exampleDirectory.'/40k_male_primitive.csv', 'r');
+                break;
+            case Type::MALE_ELVES:
                 $handle = fopen($exampleDirectory.'/male_elves.csv', 'r');
                 break;
-            case self::FEMALE_ELVES:
+            case Type::FEMALE_ELVES:
                 $handle = fopen($exampleDirectory.'/female_elves.csv', 'r');
                 break;
             default:
