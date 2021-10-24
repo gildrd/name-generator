@@ -14,6 +14,7 @@ class IntegrityChecker
         self::checkMinLength($parameter, $name);
         self::checkMaxLength($parameter, $name);
         self::checkTripleLetters($parameter, $name);
+        self::checkNoVowels($parameter, $name);
     }
 
     /**
@@ -60,13 +61,29 @@ class IntegrityChecker
                 break;
             }
 
-            if ($name[$i] === $name[$i+1] && $name[$i] === $name[$i+2]) {
+            if (strtolower($name[$i]) === strtolower($name[$i+1]) && strtolower($name[$i]) === strtolower($name[$i+2])) {
                 throw new IntegrityException(
                     sprintf('Letter \'%s\' can\'t be three times in a row in name %s',
                         $name[$i], $name
                     )
                 );
             }
+        }
+    }
+    
+
+    /**
+     * @throws IntegrityException
+     */
+    private static function checkNoVowels(Parameter $parameter, string $name): void {
+        if ($parameter->getNoVowelsInName()) {
+            return;
+        }
+        
+        if (!preg_match('/[aeiouy]+/', $name)) {
+            throw new IntegrityException(
+                    sprintf('There are no vowels in name %s', $name)
+                );
         }
     }
 }
