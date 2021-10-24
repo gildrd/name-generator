@@ -41,4 +41,26 @@ class IntegrityCheckerTest extends TestCase
         $this->expectException(IntegrityException::class);
         IntegrityChecker::check($parameter, 'azreee');
     }
+
+    public function testIntegrityNoVowels()
+    {
+        $parameter = new Parameter();
+        $parameter->setMinLength(3)
+            ->setMaxLength(7)
+            ->setNoVowelsInName(false);
+
+        $this->expectException(IntegrityException::class);
+        IntegrityChecker::check($parameter, 'zrtplm');
+    }
+
+    public function testIntegrityNoVowelsPositionedToTrue()
+    {
+        $parameter = new Parameter();
+        $parameter->setMinLength(3)
+            ->setMaxLength(7)
+            ->setNoVowelsInName(true);
+
+        IntegrityChecker::check($parameter, 'zrtplm');
+        $this->assertTrue(true);
+    }
 }
