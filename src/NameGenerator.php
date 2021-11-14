@@ -12,21 +12,32 @@ class NameGenerator
 {
     private array $firstLetters;
     private array $possibleNextLetters;
+    private array $nameList;
 
     private Parameter $parameter;
 
-    public function __construct(?int $example = null)
+    public function __construct(?int ... $example)
     {
         $this->firstLetters = [];
         $this->possibleNextLetters = [];
         $this->parameter = new Parameter();
+        $this->nameList = [];
 
-        if (null !== $example) {
-            $this->generateFromInternalFile($example);
+        foreach (func_get_args() as $args) {
+            $this->generateFromInternalFile($args);
+        }
+        
+        if (!empty($this->nameList)) {
+            $this->analyseFromArray($this->nameList);
         }
     }
+    
+    public function getNameListLength(): int
+    {
+        return count($this->nameList);
+    }
 
-    private function generateFromInternalFile(int $example)
+    private function generateFromInternalFile(int $example): void
     {
         $exampleDirectory = __DIR__.'/examples';
 
@@ -38,10 +49,22 @@ class NameGenerator
                 $handle = fopen($exampleDirectory.'/40k_male_lower_gothic.csv', 'r');
                 break;
             case Type::MALE_40K_HIGHER_GOTHIC:
-                $handle = fopen($exampleDirectory.'/40k_male_hiher_gothic.csv', 'r');
+                $handle = fopen($exampleDirectory.'/40k_male_higher_gothic.csv', 'r');
                 break;
             case Type::MALE_40K_PRIMITIVE:
                 $handle = fopen($exampleDirectory.'/40k_male_primitive.csv', 'r');
+                break;
+            case Type::FEMALE_40K_ARCHAIC:
+                $handle = fopen($exampleDirectory.'/40k_female_archaic.csv', 'r');
+                break;
+            case Type::FEMALE_40K_LOWER_GOTHIC:
+                $handle = fopen($exampleDirectory.'/40k_female_lower_gothic.csv', 'r');
+                break;
+            case Type::FEMALE_40K_HIGHER_GOTHIC:
+                $handle = fopen($exampleDirectory.'/40k_female_higher_gothic.csv', 'r');
+                break;
+            case Type::FEMALE_40K_PRIMITIVE:
+                $handle = fopen($exampleDirectory.'/40k_female_primitive.csv', 'r');
                 break;
             case Type::MALE_ELVES:
                 $handle = fopen($exampleDirectory.'/male_elves.csv', 'r');
@@ -53,14 +76,10 @@ class NameGenerator
                 throw new GenerateFromFileException(sprintf('There is no file configured for ID %s', $example));
         }
 
-        $list = [];
-
         while (($data = fgetcsv($handle)) !== false) {
-            $list[] = $data[0];
+            $this->nameList[] = $data[0];
         }
         fclose($handle);
-
-        $this->analyseFromArray($list);
     }
 
     public function analyseFromArray(array $nameList): void

@@ -272,4 +272,18 @@ class AnalyseTest extends TestCase
         $this->assertEquals(9, $parameter->getMaxLength());
         $this->assertTrue($parameter->getLetterInTriple());
     }
+    
+    public function testUniqueParameter() 
+    {
+        $nameGenerator = new NameGenerator(Type::FEMALE_40K_HIGHER_GOTHIC);
+        
+        $this->assertEquals($nameGenerator->getNameListLength(), 30);
+    }
+    
+    public function testMultipleParameters()
+    {
+        $nameGenerator = new NameGenerator(Type::FEMALE_40K_HIGHER_GOTHIC, Type::FEMALE_40K_LOWER_GOTHIC);
+        
+        $this->assertEquals($nameGenerator->getNameListLength(), 60);
+    }
 }
